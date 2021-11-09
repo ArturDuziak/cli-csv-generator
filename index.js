@@ -4,9 +4,7 @@ const faker = require("faker");
 const csv = require("csv");
 const argv = require("minimist")(process.argv.slice(2));
 
-const presetValues = ["email", "username", "phone_number"];
 const columnsValues = [];
-
 let { fileName, numOfColumns, numOfRows } = argv;
 
 if (!fileName) {
@@ -21,23 +19,34 @@ let myFile = fs.createWriteStream(`${fileName}.csv`);
 if (!numOfColumns) {
   numOfColumns = readLineSync.question("How many columns should the csv have? ", {
     limit: /^[1-9][0-9]*$/i,
-    limitMessage: "Number of column is required to proceed",
+    limitMessage: "Number of columns is required to proceed",
   });
 }
 
 if (!numOfRows) {
   numOfRows = readLineSync.question("How many rows should the csv have? ", {
     limit: /^[1-9][0-9]*$/i,
-    limitMessage: "Length of csv is required to proceed",
+    limitMessage: "Number of rows is required to proceed",
   });
 }
 
+const fakerMainCategories = Object.values(faker);
+
 for (i = 0; i < numOfColumns; i++) {
-  const columnValue = readLineSync.keyInSelect(
-    presetValues,
-    `What preset value do you want for column number ${i + 1}? `
+  const chosenMainCategoryIndex = readLineSync.keyInSelect(
+    Object.keys(faker),
+    `Choose main category of data for column number ${i + 1}: `
   );
-  columnsValues.push(columnValue);
+
+  const subCategoryIndex = readLineSync.keyInSelect(
+    Object.keys(fakerMainCategories[chosenMainCategoryIndex]),
+    `Choose sub-category of data for column number ${i + 1}: `
+  );
+
+  const chosenMainCategoryName = Object.keys(faker)[chosenMainCategoryIndex];
+  const chosenSubCategory = Object.keys(faker[chosenMainCategoryName])[subCategoryIndex];
+
+  columnsValues.push([chosenMainCategoryName, chosenSubCategory]);
 }
 
 const includeHeaders = readLineSync.keyInYN("Do you want to include headers for the columns? ");
@@ -60,27 +69,12 @@ csv
     length: Number(numOfRows),
     columns: Number(numOfColumns),
   })
-  .pipe(
-    csv.parse({
-      delimiter: ",",
-    })
-  )
+  .pipe(csv.parse())
   .pipe(
     csv.transform(function (record) {
       return record.map(function (value, index) {
-        switch (columnsValues[index]) {
-          case 0:
-            value = faker.internet.email();
-            break;
-          case 1:
-            value = faker.internet.userName();
-            break;
-          case 2:
-            value = faker.phone.phoneNumber();
-            break;
-          default:
-            value = value;
-        }
+        const [mainCategory, subCategory] = columnsValues[index];
+        value = faker[mainCategory][subCategory]();
 
         return value;
       });
