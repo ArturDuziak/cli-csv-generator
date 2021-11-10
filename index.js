@@ -3,6 +3,7 @@ const readLineSync = require("readline-sync");
 const faker = require("faker");
 const csv = require("csv");
 const argv = require("minimist")(process.argv.slice(2));
+const { selectCategory } = require("./selectCategory");
 
 const columnsValues = [];
 let { fileName, numOfColumns, numOfRows } = argv;
@@ -33,18 +34,18 @@ if (!numOfRows) {
 const fakerMainCategories = Object.values(faker);
 
 for (i = 0; i < numOfColumns; i++) {
-  const chosenMainCategoryIndex = readLineSync.keyInSelect(
+  const chosenMainCategoryIndex = selectCategory(
     Object.keys(faker),
     `Choose main category of data for column number ${i + 1}: `
   );
 
-  const subCategoryIndex = readLineSync.keyInSelect(
+  const chosenSubCategoryIndex = selectCategory(
     Object.keys(fakerMainCategories[chosenMainCategoryIndex]),
     `Choose sub-category of data for column number ${i + 1}: `
   );
 
   const chosenMainCategoryName = Object.keys(faker)[chosenMainCategoryIndex];
-  const chosenSubCategory = Object.keys(faker[chosenMainCategoryName])[subCategoryIndex];
+  const chosenSubCategory = Object.keys(faker[chosenMainCategoryName])[chosenSubCategoryIndex];
 
   columnsValues.push([chosenMainCategoryName, chosenSubCategory]);
 }
