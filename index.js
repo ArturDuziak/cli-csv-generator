@@ -64,6 +64,10 @@ if (includeHeaders) {
   }
 }
 
+const includeIndexColumn = readLineSync.keyInYN("Do you want to add a column with index value? ");
+includeIndexColumn && columnHeaders.unshift("ID");
+let indexColumnValue = 1;
+
 csv
   .generate({
     delimiter: ",",
@@ -73,12 +77,19 @@ csv
   .pipe(csv.parse())
   .pipe(
     csv.transform(function (record) {
-      return record.map(function (value, index) {
+      const newRecords = record.map(function (value, index) {
         const [mainCategory, subCategory] = columnsValues[index];
         value = faker[mainCategory][subCategory]();
 
         return value;
       });
+
+      if (includeIndexColumn) {
+        newRecords.unshift(indexColumnValue);
+        indexColumnValue++;
+      }
+
+      return newRecords;
     })
   )
   .pipe(csv.stringify(includeHeaders ? { header: true, columns: columnHeaders } : {}))
