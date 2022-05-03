@@ -1,6 +1,6 @@
 const fs = require("fs");
 const readLineSync = require("readline-sync");
-const faker = require("faker");
+const { faker } = require('@faker-js/faker');
 const csv = require("csv");
 const argv = require("minimist")(process.argv.slice(2));
 const { selectCategory } = require("./selectCategory");

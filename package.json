@@ -1,6 +1,6 @@
 {
   "name": "cli-csv-generator",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Command line tool to create CSV files",
   "main": "index.js",
   "scripts": {
@@ -9,8 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@faker-js/faker": "^6.3.1",
     "csv": "^5.5.3",
-    "faker": "^5.5.3",
     "minimist": "^1.2.5",
     "readline-sync": "^1.4.10"
   }
