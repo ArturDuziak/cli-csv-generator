@@ -17,31 +17,31 @@ if (!fileName) {
 
 let myFile = fs.createWriteStream(`${fileName}.csv`);
 
-if (!numOfColumns) {
+if (!numOfColumns || typeof numOfColumns !== "number") {
   numOfColumns = readLineSync.question("How many columns should the csv have? ", {
-    limit: /^[1-9][0-9]*$/i,
+    limit: /^[1-9]\d*$/i,
     limitMessage: "Number of columns is required to proceed",
   });
 }
 
-if (!numOfRows) {
+if (!numOfRows || typeof numOfRows !== "number") {
   numOfRows = readLineSync.question("How many rows should the csv have? ", {
-    limit: /^[1-9][0-9]*$/i,
+    limit: /^[1-9]\d*$/i,
     limitMessage: "Number of rows is required to proceed",
   });
 }
 
 const fakerMainCategories = Object.values(faker);
 
-for (i = 0; i < numOfColumns; i++) {
+for (let i = 1; i < parseInt(numOfColumns) + 1; i++) {
   const chosenMainCategoryIndex = selectCategory(
     Object.keys(faker),
-    `Choose main category of data for column number ${i + 1}: `
+    `Choose main category of data for column number ${i}: `
   );
 
   const chosenSubCategoryIndex = selectCategory(
     Object.keys(fakerMainCategories[chosenMainCategoryIndex]),
-    `Choose sub-category of data for column number ${i + 1}: `
+    `Choose sub-category of data for column number ${i}: `
   );
 
   const chosenMainCategoryName = Object.keys(faker)[chosenMainCategoryIndex];
@@ -54,8 +54,8 @@ const includeHeaders = readLineSync.keyInYN("Do you want to include headers for 
 
 const columnHeaders = [];
 if (includeHeaders) {
-  for (i = 0; i < numOfColumns; i++) {
-    const columnHeader = readLineSync.question(`What header do you want for ${i + 1} column? `, {
+  for (let i = 1; i < parseInt(numOfColumns) + 1; i++) {
+    const columnHeader = readLineSync.question(`What header do you want for ${i} column? `, {
       limit: (input) => input.trim().length > 0,
       limitMessage: "Header is required",
     });
